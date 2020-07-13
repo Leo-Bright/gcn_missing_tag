@@ -15,7 +15,7 @@ tf.compat.v1.set_random_seed(seed)
 # Settings
 flags = tf.compat.v1.flags
 FLAGS = flags.FLAGS
-flags.DEFINE_string('dataset', 'sanfrancisco', 'Dataset string.')  # 'cora', 'citeseer', 'pubmed'
+flags.DEFINE_string('dataset', 'cora', 'Dataset string.')  # 'cora', 'citeseer', 'pubmed'
 flags.DEFINE_string('model', 'gcn', 'Model string.')  # 'gcn', 'gcn_cheby', 'dense'
 flags.DEFINE_float('learning_rate', 0.01, 'Initial learning rate.')
 flags.DEFINE_integer('epochs', 100, 'Number of epochs to train.')
@@ -128,12 +128,12 @@ def save_emb_to_file(emb_vector, idx2node_dict_pkl_path, emb_idx_pkl_path, emb_f
 
 # save gcn embeddings to file
 out_activations = outs[5]
-last_layer_activation = out_activations[2]
-gcn_emb_file_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_none_16d_target_is_crossing.embedding'
-gcn_emb_idx_pkl_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_none_16d_target_is_crossing.embedding.idx.pkl'
-idx_node_dict_pkl_path = 'sanfrancisco/sf_idx_node_dict.pkl'
-save_emb_to_file(last_layer_activation, idx_node_dict_pkl_path, gcn_emb_idx_pkl_path, gcn_emb_file_path)
-print("Embeddings Saved to " + gcn_emb_file_path + ' !')
+# last_layer_activation = out_activations[2]
+# gcn_emb_file_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_none_16d_target_is_traffic.embedding'
+# gcn_emb_idx_pkl_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_none_16d_target_is_traffic.embedding.idx.pkl'
+# idx_node_dict_pkl_path = 'sanfrancisco/sf_idx_node_dict.pkl'
+# save_emb_to_file(last_layer_activation, idx_node_dict_pkl_path, gcn_emb_idx_pkl_path, gcn_emb_file_path)
+# print("Embeddings Saved to " + gcn_emb_file_path + ' !')
 
 
 # Testing

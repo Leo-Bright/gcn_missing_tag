@@ -340,7 +340,7 @@ if __name__ == '__main__':
     with open("sanfrancisco/sf_idx_node_dict.pkl", "rb") as f:
         idx_node_dict = pkl.load(f)
 
-    with open("sanfrancisco/osm_data/nodes_turning_circle.json") as f:
+    with open("sanfrancisco/osm_data/nodes_traffic_signals.json") as f:
         node_tag_dict = json.loads(f.readline())
 
     node_emb_dict = trans_input_file_to_ndarray('sanfrancisco/embeddings/sanfrancisco_raw_feature_none.embeddings')
@@ -365,7 +365,7 @@ if __name__ == '__main__':
     #         remove_redundant_node(network, red_idx, graph_file_path)
 
     # step2: generate otherx, othery file
-    # gcn_emb_idx_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_none_16d_target_is_turning_circle.embedding.idx.pkl'
+    # gcn_emb_idx_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_none_16d_target_is_traffic.embedding.idx.pkl'
     # idx_paths = [x_index[0], test_x_index[0], valid_x_index[0]]
     # red_idx = get_other_x_y_file(idx_paths, node_emb_dict, node_idx_dict, network)
     # if len(red_idx) > 0:
@@ -394,9 +394,9 @@ if __name__ == '__main__':
 
     # step0-3: generate idx file of the all labeled samples that use to test
     # all_labeled_pkl_path = 'sanfrancisco/ind.sanfrancisco.all.labeled.pkl'
-    # samples_size = split_labeled_instance(all_labeled_pkl_path, 1700, 200)
+    # test_samples_size = split_labeled_instance(all_labeled_pkl_path, 4200, 200)
     # test_index_file_path = 'sanfrancisco/ind.sanfrancisco.test.index'
-    # gen_test_index_file(samples_size, test_index_file_path)
+    # gen_test_index_file(test_samples_size, test_index_file_path)
 
     print("1")
 
