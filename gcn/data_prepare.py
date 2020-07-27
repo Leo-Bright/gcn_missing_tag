@@ -65,7 +65,14 @@ def load_edgelist(file_, idx_dict, undirected=True):
     return G
 
 
-def split_labeled_instance(all_labeled_samples_path, train_size, valid_size):
+def split_labeled_instance(all_labeled_samples_path, train_size, valid_size, node2idx, test_labled_nodes_path):
+
+    test_labled_nodes_idx = set()
+    with open(test_labled_nodes_path) as f:
+        for line in f:
+            node = line.strip()
+            test_labled_nodes_idx.add(node2idx[node])
+    test_labled_nodes_idx = list(test_labled_nodes_idx)
 
     with open(all_labeled_samples_path, "rb") as f:
         all_labeled_samples = pkl.load(f)
@@ -74,13 +81,17 @@ def split_labeled_instance(all_labeled_samples_path, train_size, valid_size):
     rd.shuffle(all_labeled_samples)
     rd.shuffle(all_labeled_samples)
 
+    rd.shuffle(test_labled_nodes_idx)
+    rd.shuffle(test_labled_nodes_idx)
+    rd.shuffle(test_labled_nodes_idx)
+
     size = len(all_labeled_samples)
 
     x = all_labeled_samples[:train_size]
 
     valid = all_labeled_samples[train_size: train_size + valid_size]
 
-    test = all_labeled_samples[train_size + valid_size:]
+    test = test_labled_nodes_idx
 
     print(len(test))
 
@@ -284,7 +295,15 @@ def generate_network_graph(network_file_path, graph_file_path, node_idx_dict):
         pkl.dump(graph, f)
 
 
-def gen_all_labeled_pkl(node2tag, node2idx, all_labeled_samples_path):
+def gen_all_labeled_pkl(node2tag, node2idx, all_labeled_samples_path, all_taged_node_path):
+
+    all_taged_nodes_without_stop = set()
+    with open(all_taged_node_path) as all_taged_node_file:
+        for line in all_taged_node_file:
+            node_tag = line.strip().split(' ')
+            tag = node_tag[1]
+            if tag != '6':
+                all_taged_nodes_without_stop.add(node_tag[0])
 
     all_labeled_samples_idx = []
 
@@ -294,7 +313,7 @@ def gen_all_labeled_pkl(node2tag, node2idx, all_labeled_samples_path):
         if key in node2tag:
             all_labeled_samples_idx.append(node2idx[key])
             count_labeled += 1
-        elif count_unlabeled < count_labeled + 1:
+        elif count_unlabeled < count_labeled + 1 and key in all_taged_nodes_without_stop:
             all_labeled_samples_idx.append(node2idx[key])
             count_unlabeled += 1
 
@@ -340,10 +359,10 @@ if __name__ == '__main__':
     with open("sanfrancisco/sf_idx_node_dict.pkl", "rb") as f:
         idx_node_dict = pkl.load(f)
 
-    with open("sanfrancisco/osm_data/nodes_traffic_signals.json") as f:
+    with open("sanfrancisco/osm_data/nodes_stop.json") as f:
         node_tag_dict = json.loads(f.readline())
 
-    node_emb_dict = trans_input_file_to_ndarray('sanfrancisco/embeddings/sanfrancisco_raw_feature_none.embeddings')
+    node_emb_dict = trans_input_file_to_ndarray('sanfrancisco/embeddings/sanfrancisco_raw_feature_only_type.embeddings')
 
     graph_file_path = "sanfrancisco/ind.sanfrancisco.graph"
     with open(graph_file_path, "rb") as f:
@@ -365,7 +384,7 @@ if __name__ == '__main__':
     #         remove_redundant_node(network, red_idx, graph_file_path)
 
     # step2: generate otherx, othery file
-    # gcn_emb_idx_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_none_16d_target_is_traffic.embedding.idx.pkl'
+    # gcn_emb_idx_path = 'sanfrancisco/embeddings/sf_gcn_raw_feature_only_type_16d_missing_tag.embedding.idx.pkl'
     # idx_paths = [x_index[0], test_x_index[0], valid_x_index[0]]
     # red_idx = get_other_x_y_file(idx_paths, node_emb_dict, node_idx_dict, network)
     # if len(red_idx) > 0:
@@ -389,12 +408,14 @@ if __name__ == '__main__':
     # generate_network_graph('sanfrancisco/osm_data/sf_roadnetwork', 'sanfrancisco/ind.sanfrancisco.graph', node_idx_dict)
 
     # step0-2: generate idx pkl file of the all labeled samples that use to train/test/valid
+    # all_taged_node_file_path = 'sanfrancisco/osm_data/sanfrancisco_nodes_with_all.tag'
     # all_labeled_pkl_path = 'sanfrancisco/ind.sanfrancisco.all.labeled.pkl'
-    # gen_all_labeled_pkl(node_tag_dict, node_idx_dict, all_labeled_pkl_path)
+    # gen_all_labeled_pkl(node_tag_dict, node_idx_dict, all_labeled_pkl_path, all_taged_node_file_path)
 
     # step0-3: generate idx file of the all labeled samples that use to test
     # all_labeled_pkl_path = 'sanfrancisco/ind.sanfrancisco.all.labeled.pkl'
-    # test_samples_size = split_labeled_instance(all_labeled_pkl_path, 4200, 200)
+    # test_labled_nodes_path = 'sanfrancisco/osm_data/increament_stop_nodes.txt'
+    # test_samples_size = split_labeled_instance(all_labeled_pkl_path, 437, 50, node_idx_dict, test_labled_nodes_path)
     # test_index_file_path = 'sanfrancisco/ind.sanfrancisco.test.index'
     # gen_test_index_file(test_samples_size, test_index_file_path)
 
