@@ -65,14 +65,7 @@ def load_edgelist(file_, idx_dict, undirected=True):
     return G
 
 
-def split_labeled_instance(all_labeled_samples_path, train_size, valid_size, node2idx, test_labled_nodes_path):
-
-    test_labled_nodes_idx = set()
-    with open(test_labled_nodes_path) as f:
-        for line in f:
-            node = line.strip()
-            test_labled_nodes_idx.add(node2idx[node])
-    test_labled_nodes_idx = list(test_labled_nodes_idx)
+def split_labeled_instance(all_labeled_samples_path, train_size, valid_size):
 
     with open(all_labeled_samples_path, "rb") as f:
         all_labeled_samples = pkl.load(f)
@@ -81,17 +74,13 @@ def split_labeled_instance(all_labeled_samples_path, train_size, valid_size, nod
     rd.shuffle(all_labeled_samples)
     rd.shuffle(all_labeled_samples)
 
-    rd.shuffle(test_labled_nodes_idx)
-    rd.shuffle(test_labled_nodes_idx)
-    rd.shuffle(test_labled_nodes_idx)
-
     size = len(all_labeled_samples)
 
     x = all_labeled_samples[:train_size]
 
     valid = all_labeled_samples[train_size: train_size + valid_size]
 
-    test = test_labled_nodes_idx
+    test = all_labeled_samples[train_size + valid_size:]
 
     print(len(test))
 
@@ -359,7 +348,7 @@ if __name__ == '__main__':
     with open("sanfrancisco/sf_idx_node_dict.pkl", "rb") as f:
         idx_node_dict = pkl.load(f)
 
-    with open("sanfrancisco/osm_data/nodes_stop.json") as f:
+    with open("sanfrancisco/osm_data/nodes_stop_increament.json") as f:
         node_tag_dict = json.loads(f.readline())
 
     node_emb_dict = trans_input_file_to_ndarray('sanfrancisco/embeddings/sanfrancisco_raw_feature_only_type.embeddings')
@@ -414,8 +403,7 @@ if __name__ == '__main__':
 
     # step0-3: generate idx file of the all labeled samples that use to test
     # all_labeled_pkl_path = 'sanfrancisco/ind.sanfrancisco.all.labeled.pkl'
-    # test_labled_nodes_path = 'sanfrancisco/osm_data/increament_stop_nodes.txt'
-    # test_samples_size = split_labeled_instance(all_labeled_pkl_path, 437, 50, node_idx_dict, test_labled_nodes_path)
+    # test_samples_size = split_labeled_instance(all_labeled_pkl_path, 7000, 200)
     # test_index_file_path = 'sanfrancisco/ind.sanfrancisco.test.index'
     # gen_test_index_file(test_samples_size, test_index_file_path)
 
